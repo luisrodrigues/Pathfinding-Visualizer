@@ -49,25 +49,25 @@ class Pixel:
         return self.color == TURQUOISE
 
     def reset(self):
-        self.color == WHITE
+        self.color = WHITE
 
     def paint_closed(self):
-        self.color == RED
+        self.color = RED
 
     def paint_open(self):
-        self.color == GREEN
+        self.color = GREEN
 
     def paint_obstacle(self):
-        self.color == BLACK
+        self.color = BLACK
 
     def paint_start(self):
-        self.color == ORANGE
+        self.color = ORANGE
 
     def paint_end(self):
-        self.color == TURQUOISE
+        self.color = TURQUOISE
 
     def paint_path(self):
-        self.color == PURPLE
+        self.color = PURPLE
 
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.width))
@@ -112,3 +112,54 @@ def draw(win, grid, rows, width):
 
     draw_grid(win, rows, width)
     pygame.display.update()
+
+# handle clicks
+def get_clicked_pos(pos, rows, width):
+    gap = width // rows
+    y, x = pos
+
+    row = x // gap
+    col = y // gap
+
+    return row, col
+
+# main loop
+def main(win, width):
+    ROWS = 50
+    grid = make_grid(ROWS, width)
+
+    start = None
+    end = None
+    
+    run = True
+    started = False
+
+    while run:
+        draw(win, grid, ROWS, width)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            
+            if started:
+                continue
+
+            if pygame.mouse.get_pressed()[0]: # left mouse button
+                pos = pygame.mouse.get_pos()
+                row, col = get_clicked_pos(pos, ROWS, width)
+                pixel = grid[row][col]
+
+                if not start:
+                    start = pixel
+                    start.paint_start()
+                elif not end:
+                    end = pixel
+                    end.paint_end()
+                elif pixel != end and pixel != start:
+                    pixel.paint_obstacle()
+            elif pygame.mouse.get_pressed()[2]: # right mouse button
+                pass
+    
+    pygame.quit()
+
+main(WIN, WIDTH)
